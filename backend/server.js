@@ -1,6 +1,7 @@
-import express from 'express';
-import sqlite3 from 'sqlite3';
-import cors from 'cors';
+import express from "express";
+import sqlite3 from "sqlite3";
+import { open } from "sqlite";
+import cors from "cors";
 
 const app = express();
 const PORT = 3000;
@@ -8,60 +9,113 @@ const PORT = 3000;
 app.use(express.json());
 app.use(cors());
 
-const db = new sqlite3.Database('baza.db');
-
-db.run("CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT)");
-
-
-app.listen(PORT, () => {
-    console.log(`Serwer działa na http://localhost:${PORT}`);
+const db = await open({
+  filename: "baza.db",
+  driver: sqlite3.Database,
 });
 
+await db.run(
+  "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT)",
+);
+await db.run(
+  "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT)",
+); //TODO: hash
 
+app.listen(PORT, () => {
+  console.log(`Serwer działa na http://localhost:${PORT}`);
+});
 
-app.get("/todos/:id", (req, res)=>{
-    const sql = "SELECT * FROM todos WHERE id = ?"
+// auth
+app.post("/auth/register", async (req, res) => {
+  try {
+    const getExistedUserSQL = "SELECT * FROM users WHERE email = ? OR name = ?";
+    const existedUser = await db.get(getExistedUserSQL, [
+      req.body.email,
+      req.body.name,
+    ]);
 
-    db.get(sql, [req.params.id], (err, row)=>{
-        if(err){
-            console.log(err)
-            res.statusCode = 400
+    if (existedUser) {
+      res.statusCode(401);
+      return res.json({
+        status:
+          "this user already exists. please use differnet username or email",
+      });
+    }
 
-            return res.json({ status: "an error occured"}) 
-        }
+    const registerNewUserSQL =
+      "INSERT INTO users ( name, email, password ) VALUES (?, ?, ?)";
 
-        return res.json({ status: "ok", todoItem: row}) 
-    })
-})
+    await db.run(registerNewUserSQL, [
+      req.body.name,
+      req.body.email,
+      req.body.password,
+    ]);
 
-app.get("/todos", (req, res)=>{
-    const sql = "SELECT * FROM todos"
+    res.statusCode(201);
+    return res.json({ status: "user created. please log in" });
+  } catch (err) {
+    res.statusCode = 500;
+    return res.json({ status: "an error occured" });
+  }
+});
 
-    db.all(sql, (err, rows)=>{
-        if(err){
-            res.statusCode = 400
+app.post("/auth/login", async (req, res) => {
+  try {
+    const loginUserSQL = "SELECT * FROM users WHERE email = ? AND password = ?";
+    const user = await db.get(loginUserSQL, [
+      req.body.email,
+      req.body.password,
+    ]);
 
-            return res.json({ status: "an error occured"}) 
-        }
+    if (!user) {
+      res.statusCode(404);
+      return res.json({ status: "user not found" });
+    }
 
-        return res.json({ status: "ok", todos: rows}) 
-    })
-})
+    return res.json({ status: "ok", user });
+  } catch (err) {
+    res.statusCode = 500;
+    return res.json({ status: "an error occured" });
+  }
+});
 
+//TODO: logout
 
-app.post('/todos', (req, res) => {
-    const newItem = req.body.item
+// todos
+app.get("/todos/:id", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM todos WHERE id = ?";
+    const row = await db.get(sql, [req.params.id]);
+    return res.json({ status: "ok", todoItem: row });
+  } catch (err) {
+    console.log(err);
+    res.statusCode = 500;
+    return res.json({ status: "an error occured" });
+  }
+});
 
-    const sql = "INSERT INTO todos ( task ) VALUES (?)"
+app.get("/todos", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM todos";
+    const rows = await db.all(sql);
 
-    db.exec(sql, [newItem], (err)=>{
-        if(err){
-            console.log(err)
-            res.statusCode = 400
+    return res.json({ status: "ok", todos: rows });
+  } catch (err) {
+    console.log(err);
+    res.statusCode = 500;
+    return res.json({ status: "an error occured" });
+  }
+});
 
-            return res.json({ status: "an error occured"}) 
-        }
-
-        return res.json({ status: "created"}) 
-    })
+app.post("/todos", async (req, res) => {
+  try {
+    const newItem = req.body.item;
+    const sql = "INSERT INTO todos ( task ) VALUES (?)";
+    await db.run(sql, [newItem]);
+    return res.json({ status: "created" });
+  } catch (err) {
+    console.log(err);
+    res.statusCode = 500;
+    return res.json({ status: "an error occured" });
+  }
 });
