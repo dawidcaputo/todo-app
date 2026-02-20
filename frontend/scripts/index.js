@@ -1,2 +1,1 @@
-import "./todo.js";
-import "./auth.js";
+import "./auth/events.js";
