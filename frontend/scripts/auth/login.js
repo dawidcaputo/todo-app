@@ -1,6 +1,6 @@
 import { AUTH_URL } from "./consts.js";
 import { setUser, user } from "./user.js";
-import { closeModal } from "./ui.js";
+import { closeModal, toggleLoginBtws } from "./ui.js";
 
 export const loginUser = async (email, password) => {
   const LOGIN_URL = `${AUTH_URL}/login`;
@@ -26,6 +26,8 @@ export const loginUser = async (email, password) => {
 
     setUser(body.user);
     closeModal();
+
+    toggleLoginBtws();
 
     console.log(user);
   } catch (err) {

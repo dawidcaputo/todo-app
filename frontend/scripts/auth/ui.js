@@ -6,10 +6,13 @@ import {
   loginEmailInput,
   loginForm,
   loginPasswordInput,
+  logoutBtn,
+  openAuthModalBtn,
   registerEmailInput,
   registerForm,
   registerNameInput,
   registerPasswordInput,
+  nameuser,
 } from "./selectors.js";
 
 export const closeModal = () => {
@@ -54,4 +57,13 @@ export const getUserInfoAndRegister = (el) => {
   const name = registerNameInput.value;
 
   registerUser(name, email, password);
+};
+
+export const toggleLoginBtws = () => {
+  logoutBtn.classList.remove("hidden");
+  openAuthModalBtn.classList.add("hidden");
+
+  if (toggleLoginBtws) {
+    openAuthModalBtn = "hidden";
+  }
 };
