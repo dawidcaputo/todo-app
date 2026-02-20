@@ -35,8 +35,8 @@ app.post("/auth/register", async (req, res) => {
     ]);
 
     if (existedUser) {
-      res.statusCode(401);
-      return res.json({
+      // ZMIANA: używamy .status() zamiast .statusCode()
+      return res.status(401).json({
         status:
           "this user already exists. please use differnet username or email",
       });
@@ -51,11 +51,9 @@ app.post("/auth/register", async (req, res) => {
       req.body.password,
     ]);
 
-    res.statusCode(201);
-    return res.json({ status: "user created. please log in" });
+    return res.status(201).json({ status: "user created. please log in" });
   } catch (err) {
-    res.statusCode = 500;
-    return res.json({ status: "an error occured" });
+    return res.status(500).json({ status: "an error occured" });
   }
 });
 
@@ -68,14 +66,16 @@ app.post("/auth/login", async (req, res) => {
     ]);
 
     if (!user) {
-      res.statusCode(404);
-      return res.json({ status: "user not found" });
+      // ZMIANA: używamy .status() zamiast .statusCode()
+      return res
+        .status(404)
+        .json({ status: "user not found or wrong password" });
     }
 
     return res.json({ status: "ok", user });
   } catch (err) {
-    res.statusCode = 500;
-    return res.json({ status: "an error occured" });
+    // ZMIANA: 12poprawne przypisanie statusu błędu
+    return res.status(500).json({ status: "an error occured" });
   }
 });
 
