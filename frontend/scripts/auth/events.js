@@ -1,9 +1,11 @@
+import { logout } from "./logout.js";
 import {
   authModalCloseBtn,
   openAuthModalBtn,
   authModeSwitchBtn,
   registerForm,
   loginForm,
+  logoutBtn,
 } from "./selectors.js";
 import {
   closeModal,
@@ -14,6 +16,8 @@ import {
 } from "./ui.js";
 
 openAuthModalBtn.addEventListener("click", openModal);
+
+logoutBtn.addEventListener("click", logout);
 
 authModalCloseBtn.addEventListener("click", closeModal);
 

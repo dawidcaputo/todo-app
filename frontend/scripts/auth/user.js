@@ -1,5 +1,5 @@
-export let user;
+export let user = null;
 
-export const setUser = (importedUser) => {
-  user = importedUser;
+export const setUser = (currentUser) => {
+  user = currentUser;
 };

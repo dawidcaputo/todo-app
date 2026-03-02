@@ -12,8 +12,9 @@ import {
   registerForm,
   registerNameInput,
   registerPasswordInput,
-  nameuser,
+  userNameInfoBox,
 } from "./selectors.js";
+import { user } from "./user.js";
 
 export const closeModal = () => {
   authModal.classList.add("hidden");
@@ -59,11 +60,14 @@ export const getUserInfoAndRegister = (el) => {
   registerUser(name, email, password);
 };
 
-export const toggleLoginBtws = () => {
-  logoutBtn.classList.remove("hidden");
-  openAuthModalBtn.classList.add("hidden");
+export const updateHeader = () => {
+  logoutBtn.classList.toggle("hidden");
+  openAuthModalBtn.classList.toggle("hidden");
 
-  if (toggleLoginBtws) {
-    openAuthModalBtn = "hidden";
+  if (user) {
+    userNameInfoBox.textContent = user.name;
+    return;
   }
+
+  userNameInfoBox.textContent = "";
 };

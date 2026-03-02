@@ -2,7 +2,7 @@
 export const openAuthModalBtn = document.querySelector(".auth-modal-open-btn");
 export const logoutBtn = document.querySelector(".auth-modal-logout-btn");
 export const authModal = document.querySelector(".auth-modal");
-export const nameuser = ducument.querySelector("name-user");
+export const userNameInfoBox = document.querySelector(".name-user");
 export const authModalCloseBtn = authModal.querySelector(
   ".auth-modal-close-btn",
 );
