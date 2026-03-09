@@ -132,3 +132,24 @@ app.post("/todos", async (req, res) => {
     return res.json({ status: "an error occured" });
   }
 });
+
+app.patch("/todos/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const newItem = req.body.name;
+
+    // Sprawdź czy istnieje
+    const existing = await db.get("SELECT * FROM todos WHERE id = ?", [id]);
+    if (!existing) {
+      return res.status(404).json({ status: "todo not found" });
+    }
+
+    const sql = "UPDATE todos SET name = ? WHERE id = ?";
+    await db.run(sql, [newItem, id]);
+
+    const updatedTodo = await db.get("SELECT * FROM todos WHERE id = ?", [id]); // fix: przecinek zamiast []
+    return res.json({ status: "ok", todo: updatedTodo });
+  } catch (err) {
+    return res.status(500).json({ status: "an error occured" });
+  }
+});

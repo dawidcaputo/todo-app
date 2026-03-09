@@ -28,7 +28,7 @@ export const addTask = async (task) => {
 };
 
 export const getAllTodos = async () => {
-  const req = {
+  const reqConfig = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -36,7 +36,7 @@ export const getAllTodos = async () => {
   };
 
   try {
-    const res = await fetch(TODOS_URL, req);
+    const res = await fetch(TODOS_URL, reqConfig);
     const body = await res.json();
 
     if (res.status !== 200) {
@@ -45,6 +45,35 @@ export const getAllTodos = async () => {
     }
 
     return body.todos;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const editTask = async (id, newName) => {
+  const req = {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name: newName }),
+  };
+
+  try {
+    const res = await fetch(`${TODOS_URL}/${id}`, req);
+    const body = await res.json();
+
+    if (res.status === 404) {
+      alert("Błąd: to zadanie nie istnieje!");
+      return null;
+    }
+
+    if (res.status !== 200) {
+      console.log("Błąd edycji");
+      return null;
+    }
+
+    return body.todo;
   } catch (err) {
     console.log(err);
   }

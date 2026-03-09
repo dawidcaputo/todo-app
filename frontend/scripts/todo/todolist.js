@@ -1,4 +1,4 @@
-import { addTask, getAllTodos } from "./api.js";
+import { addTask, getAllTodos, editTask } from "./api.js";
 import { toDoInput, todoList } from "./selectors.js";
 
 export let ToDoTabela = [];
@@ -50,14 +50,33 @@ export const obslugaWcisnieciaPrzycisku = (event) => {
 // };
 
 const addTaskToList = (task) => {
-  if (!task) {
-    return;
-  }
+  if (!task) return;
 
-  const nowyElemant = document.createElement("li");
-  nowyElemant.textContent = task.name;
-  nowyElemant.setAttribute("id", task.id);
-  todoList.insertBefore(nowyElemant, todoList.children[0]);
+  const li = document.createElement("li");
+  li.setAttribute("id", task.id);
+
+  const span = document.createElement("span");
+  span.textContent = task.name;
+
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "✏️";
+  editBtn.addEventListener("click", () => handleEdit(task.id, span));
+
+  li.appendChild(span);
+  li.appendChild(editBtn);
+  todoList.insertBefore(li, todoList.children[0]);
+};
+
+const handleEdit = async (id, span) => {
+  const newName = prompt("Nowa nazwa zadania:", span.textContent);
+
+  if (!newName || newName === span.textContent) return;
+
+  const updated = await editTask(id, newName);
+
+  if (updated) {
+    span.textContent = updated.name;
+  }
 };
 
 export const zainicjiujListe = async () => {
