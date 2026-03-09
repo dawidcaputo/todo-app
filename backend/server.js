@@ -4,7 +4,7 @@ import { open } from "sqlite";
 import cors from "cors";
 
 const app = express();
-const PORT = 3000;
+const PORT = 3002;
 
 app.use(express.json());
 app.use(cors());
@@ -15,7 +15,7 @@ const db = await open({
 });
 
 await db.run(
-  "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT)",
+  "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)",
 );
 await db.run(
   "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT)",
@@ -25,6 +25,7 @@ app.listen(PORT, () => {
   console.log(`Serwer działa na http://localhost:${PORT}`);
 });
 
+// localhost:3000/auth/register
 // auth
 app.post("/auth/register", async (req, res) => {
   try {
@@ -84,8 +85,14 @@ app.post("/auth/login", async (req, res) => {
 // todos
 app.get("/todos/:id", async (req, res) => {
   try {
-    const sql = "SELECT * FROM todos WHERE id = ?";
+    const sql = `SELECT * FROM todos WHERE id = ?`;
+
     const row = await db.get(sql, [req.params.id]);
+
+    if (!row) {
+      return res.sendStatus(404);
+    }
+
     return res.json({ status: "ok", todoItem: row });
   } catch (err) {
     console.log(err);
@@ -109,10 +116,16 @@ app.get("/todos", async (req, res) => {
 
 app.post("/todos", async (req, res) => {
   try {
-    const newItem = req.body.item;
-    const sql = "INSERT INTO todos ( task ) VALUES (?)";
-    await db.run(sql, [newItem]);
-    return res.json({ status: "created" });
+    const newItem = req.body.taskName;
+    const sql = "INSERT INTO todos ( name ) VALUES (?)";
+    const result = await db.run(sql, [newItem]);
+
+    const id = result.lastID;
+    const sqlGET = `SELECT * FROM todos WHERE id = ?`;
+    const row = await db.get(sqlGET, [id]);
+    console.log(row);
+
+    return res.json({ task: row, status: "created" });
   } catch (err) {
     console.log(err);
     res.statusCode = 500;
