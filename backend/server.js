@@ -147,7 +147,7 @@ app.patch("/todos/:id", async (req, res) => {
     const sql = "UPDATE todos SET name = ? WHERE id = ?";
     await db.run(sql, [newItem, id]);
 
-    const updatedTodo = await db.get("SELECT * FROM todos WHERE id = ?", [id]); // fix: przecinek zamiast []
+    const updatedTodo = await db.get("SELECT * FROM todos WHERE id = ?", [id]);
     return res.json({ status: "ok", todo: updatedTodo });
   } catch (err) {
     return res.status(500).json({ status: "an error occured" });

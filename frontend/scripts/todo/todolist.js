@@ -41,14 +41,6 @@ export const obslugaWcisnieciaPrzycisku = (event) => {
   dodanieDoListy();
 };
 
-//   = () => {
-//   const nowyElemant = document.createElement("li");
-//   nowyElemant.textContent = ;
-//   todoList.appendChild(nowyElemant);
-//   };
-
-// };
-
 const addTaskToList = (task) => {
   if (!task) return;
 
@@ -59,7 +51,7 @@ const addTaskToList = (task) => {
   span.textContent = task.name;
 
   const editBtn = document.createElement("button");
-  editBtn.textContent = "✏️";
+  editBtn.textContent = "edytuj";
   editBtn.addEventListener("click", () => handleEdit(task.id, span));
 
   li.appendChild(span);
@@ -67,15 +59,18 @@ const addTaskToList = (task) => {
   todoList.insertBefore(li, todoList.children[0]);
 };
 
-const handleEdit = async (id, span) => {
-  const newName = prompt("Nowa nazwa zadania:", span.textContent);
+const handleEdit = async (id, spanText) => {
+  const newName = prompt("Nowa nazwa zadania:", spanText.textContent);
 
-  if (!newName || newName === span.textContent) return;
+  if (!newName || newName === spanText.textContent) {
+    alert("Błąd: Brak terści lub ta sama nazwa");
+    return null;
+  }
 
   const updated = await editTask(id, newName);
 
   if (updated) {
-    span.textContent = updated.name;
+    spanText.textContent = updated.name;
   }
 };
 
