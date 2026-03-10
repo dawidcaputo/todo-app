@@ -78,3 +78,20 @@ export const editTask = async (id, newName) => {
     console.log(err);
   }
 };
+
+export const deleteTask = async (id) => {
+  const req = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const res = await fetch(`${TODOS_URL}/${id}`, req);
+
+    return await res.json();
+  } catch (err) {
+    return { status: "Server error" };
+  }
+};

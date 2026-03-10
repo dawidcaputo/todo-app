@@ -1,4 +1,4 @@
-import { addTask, getAllTodos, editTask } from "./api.js";
+import { addTask, getAllTodos, editTask, deleteTask } from "./api.js";
 import { toDoInput, todoList } from "./selectors.js";
 
 export let ToDoTabela = [];
@@ -54,15 +54,20 @@ const addTaskToList = (task) => {
   editBtn.textContent = "edytuj";
   editBtn.addEventListener("click", () => handleEdit(task.id, span));
 
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "usuń";
+  deleteBtn.addEventListener("click", () => handleDelete(task.id, li));
+
   li.appendChild(span);
   li.appendChild(editBtn);
+  li.appendChild(deleteBtn);
   todoList.insertBefore(li, todoList.children[0]);
 };
 
-const handleEdit = async (id, spanText) => {
-  const newName = prompt("Nowa nazwa zadania:", spanText.textContent);
+const handleEdit = async (id, span) => {
+  const newName = prompt("Nowa nazwa zadania:", span.textContent);
 
-  if (!newName || newName === spanText.textContent) {
+  if (!newName || newName === span.textContent) {
     alert("Błąd: Brak terści lub ta sama nazwa");
     return null;
   }
@@ -70,11 +75,21 @@ const handleEdit = async (id, spanText) => {
   const updated = await editTask(id, newName);
 
   if (updated) {
-    spanText.textContent = updated.name;
+    span.textContent = updated.name;
   }
+};
+
+export const handleDelete = async (id, li) => {
+  const response = await deleteTask(id);
+
+  if (!response.id) {
+    alert(response.status);
+  }
+
+  li.remove();
 };
 
 export const zainicjiujListe = async () => {
   const todos = await getAllTodos();
-  todos.forEach(addTaskToList);
+  todos.forEach((todo) => addTaskToList(todo));
 };

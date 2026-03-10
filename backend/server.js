@@ -138,7 +138,6 @@ app.patch("/todos/:id", async (req, res) => {
     const id = req.params.id;
     const newItem = req.body.name;
 
-    // Sprawdź czy istnieje
     const existing = await db.get("SELECT * FROM todos WHERE id = ?", [id]);
     if (!existing) {
       return res.status(404).json({ status: "todo not found" });
@@ -151,5 +150,23 @@ app.patch("/todos/:id", async (req, res) => {
     return res.json({ status: "ok", todo: updatedTodo });
   } catch (err) {
     return res.status(500).json({ status: "an error occured" });
+  }
+});
+
+app.delete("/todos/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const existing = await db.get("SELECT * FROM todos WHERE id = ?", [id]);
+
+    if (!existing) {
+      return res.status(404).json({ status: "Item not found" });
+    }
+
+    await db.run("DELETE FROM todos WHERE id = ?", [id]);
+    return res.json({ status: "ok", id });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ status: "Server error" });
   }
 });
