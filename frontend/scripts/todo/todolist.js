@@ -1,9 +1,15 @@
 import { addTask, getAllTodos, editTask, deleteTask } from "./api.js";
-import { toDoInput, todoList } from "./selectors.js";
+import { searchInput, toDoInput, todoList } from "./selectors.js";
+import { user } from "../auth/user.js";
 
 export let ToDoTabela = [];
 
 export const dodanieDoListy = async () => {
+  if (!user) {
+    alert("Musisz być zalogowany aby dodać zadanie!");
+    return;
+  }
+
   const inputValue = toDoInput.value;
 
   if (!inputValue) {
@@ -90,6 +96,16 @@ export const handleDelete = async (id, li) => {
 };
 
 export const zainicjiujListe = async () => {
+  if (!user) return;
   const todos = await getAllTodos();
   todos.forEach((todo) => addTaskToList(todo));
+};
+
+export const filterTasks = () => {
+  const query = searchInput.value.toLowerCase().trim();
+  const items = todoList.querySelectorAll("li");
+  items.forEach((li) => {
+    const taskName = li.querySelector("span").textContent.toLowerCase();
+    li.style.display = taskName.includes(query) ? "" : "none";
+  });
 };

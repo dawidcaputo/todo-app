@@ -1,6 +1,8 @@
 import { AUTH_URL } from "./consts.js";
 import { setUser, user } from "./user.js";
 import { closeModal, updateHeader } from "./ui.js";
+import { todoList } from "../todo/selectors.js";
+import { zainicjiujListe } from "../todo/todolist.js";
 
 export const loginUser = async (email, password) => {
   const LOGIN_URL = `${AUTH_URL}/login`;
@@ -25,11 +27,11 @@ export const loginUser = async (email, password) => {
     }
 
     setUser(body.user);
+    localStorage.setItem("token", body.token);
     closeModal();
-
     updateHeader();
-
-    console.log(user);
+    todoList.innerHTML = "";
+    zainicjiujListe();
   } catch (err) {
     console.log(err);
   }

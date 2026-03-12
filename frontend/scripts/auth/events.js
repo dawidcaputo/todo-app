@@ -13,7 +13,9 @@ import {
   getUserInfoAndRegister,
   openModal,
   switchAuthMode,
+  updateHeader,
 } from "./ui.js";
+import { user } from "./user.js";
 
 openAuthModalBtn.addEventListener("click", openModal);
 
@@ -26,3 +28,7 @@ authModeSwitchBtn.addEventListener("click", switchAuthMode);
 loginForm.addEventListener("submit", getUserInfoAndLogin);
 
 registerForm.addEventListener("submit", getUserInfoAndRegister);
+
+if (user) {
+  updateHeader();
+}

@@ -2,6 +2,9 @@ import express from "express";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import cors from "cors";
+import jwt from "jsonwebtoken";
+
+const SECRET = "super_tajny_klucz_123";
 
 const app = express();
 const PORT = 3002;
@@ -15,8 +18,10 @@ const db = await open({
 });
 
 await db.run(
-  "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)",
+  "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, userId INTEGER)",
 );
+await db.run("ALTER TABLE todos ADD COLUMN userId INTEGER").catch(() => {});
+
 await db.run(
   "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT, password TEXT)",
 ); //TODO: hash
@@ -73,7 +78,8 @@ app.post("/auth/login", async (req, res) => {
         .json({ status: "user not found or wrong password" });
     }
 
-    return res.json({ status: "ok", user });
+    const token = jwt.sign({ userId: user.id }, SECRET);
+    return res.json({ status: "ok", user, token });
   } catch (err) {
     // ZMIANA: 12poprawne przypisanie statusu błędu
     return res.status(500).json({ status: "an error occured" });
@@ -81,55 +87,43 @@ app.post("/auth/login", async (req, res) => {
 });
 
 //TODO: logout
+const verifyToken = (req, res, next) => {
+  const token = req.headers["authorization"];
 
-// todos
-app.get("/todos/:id", async (req, res) => {
-  try {
-    const sql = `SELECT * FROM todos WHERE id = ?`;
-
-    const row = await db.get(sql, [req.params.id]);
-
-    if (!row) {
-      return res.sendStatus(404);
-    }
-
-    return res.json({ status: "ok", todoItem: row });
-  } catch (err) {
-    console.log(err);
-    res.statusCode = 500;
-    return res.json({ status: "an error occured" });
+  if (!token) {
+    return res.status(401).json({ status: "brak tokenu" });
   }
-});
 
-app.get("/todos", async (req, res) => {
   try {
-    const sql = "SELECT * FROM todos";
-    const rows = await db.all(sql);
-
+    const decoded = jwt.verify(token, SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch (err) {
+    return res.status(401).json({ status: "nieprawidłowy token" });
+  }
+};
+// todos
+app.get("/todos", verifyToken, async (req, res) => {
+  try {
+    const sql = "SELECT * FROM todos WHERE userId = ?";
+    const rows = await db.all(sql, [req.userId]);
     return res.json({ status: "ok", todos: rows });
   } catch (err) {
-    console.log(err);
-    res.statusCode = 500;
-    return res.json({ status: "an error occured" });
+    return res.status(500).json({ status: "an error occured" });
   }
 });
 
-app.post("/todos", async (req, res) => {
+app.post("/todos", verifyToken, async (req, res) => {
   try {
-    const newItem = req.body.taskName;
-    const sql = "INSERT INTO todos ( name ) VALUES (?)";
-    const result = await db.run(sql, [newItem]);
-
-    const id = result.lastID;
-    const sqlGET = `SELECT * FROM todos WHERE id = ?`;
-    const row = await db.get(sqlGET, [id]);
-    console.log(row);
-
+    const { taskName } = req.body;
+    const sql = "INSERT INTO todos (name, userId) VALUES (?, ?)";
+    const result = await db.run(sql, [taskName, req.userId]);
+    const row = await db.get("SELECT * FROM todos WHERE id = ?", [
+      result.lastID,
+    ]);
     return res.json({ task: row, status: "created" });
   } catch (err) {
-    console.log(err);
-    res.statusCode = 500;
-    return res.json({ status: "an error occured" });
+    return res.status(500).json({ status: "an error occured" });
   }
 });
 
