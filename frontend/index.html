@@ -1,17 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    <ul class="todo-list">
-    </ul>
-    <input type="text" class="todo-input">
-    <button class="add-tood-btn" data-el="btn">Wpisz się</button>
-    <script src="frontend.js" type="module"></script>
-    <script src="style.css"></script>
-</body>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="body">
+    <header class="header">
+      <h1>todo app</h1>
+      <div>
+        <span class="name-user"></span>
+        <button class="auth-modal-open-btn">zaloguj się</button>
+        <button class="auth-modal-logout-btn hidden">wyloguj się</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="w-3-4">
+        <h2>Lista zadań</h2>
+        <ul class="todo-list"></ul>
+      </div>
+      <div class="w-1-4">
+        <input type="text" class="search-input" placeholder="Szukaj zadania" />
+        <div class="add-task-row">
+          <input type="text" class="todo-input" placeholder="Nowe zadanie" />
+          <button class="add-todo-btn">Dodaj</button>
+        </div>
+      </div>
+    </main>
+
+    <div class="auth-modal hidden">
+      <div class="modal-box">
+        <button type="button" class="auth-modal-close-btn">❌</button>
+
+        <form class="auth-form login-form">
+          <h2>Logowanie</h2>
+          <input
+            class="login-email-input"
+            type="email"
+            placeholder="Email"
+            required
+          />
+          <input
+            class="login-password-input"
+            type="password"
+            placeholder="Hasło"
+            required
+          />
+          <button type="submit">Zaloguj się</button>
+        </form>
+
+        <form class="auth-form register-form hidden">
+          <h2>Rejestrowanie</h2>
+          <input
+            class="register-name-input"
+            type="text"
+            placeholder="Nazwa"
+            required
+          />
+          <input
+            class="register-email-input"
+            type="email"
+            placeholder="Email"
+            required
+          />
+          <input
+            class="register-password-input"
+            type="password"
+            placeholder="Hasło"
+            required
+          />
+          <button type="submit">Zarejestruj się</button>
+        </form>
+
+        <p class="auth-mode-swtich-el">
+          <span class="auth-mode-swtich-text">Nie masz jeszcze konta?</span>
+          <span class="auth-mode-swtich-btn">Zarejestruj się</span>
+        </p>
+      </div>
+    </div>
+
+    <script src="./scripts/index.js" type="module"></script>
+  </body>
 </html>

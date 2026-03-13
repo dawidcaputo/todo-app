@@ -1,0 +1,131 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main {
+  display: flex;
+  gap: 2px;
+}
+
+.main > * {
+  width: 50%;
+  min-height: 50vh;
+  padding: 10px;
+  background-color: #e0d3d3;
+}
+
+.w-3-4 {
+  width: 75%;
+}
+.w-1-4 {
+  width: 25% !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.search-input {
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.add-task-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-task-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-task-row button {
+  white-space: nowrap;
+}
+
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Czarny z 50% przezroczystości */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Żeby zawsze było na wierzchu */
+}
+
+/* Biała kratka na środku */
+.modal-box {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  position: relative;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Prosty styl dla formularzy w środku */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-modal-close-btn {
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.auth-modal-open-btn {
+  cursor: pointer;
+}
+
+.p {
+  padding: 20px;
+  margin: 20px;
+  border: 5px solid black;
+  background-color: aqua;
+}
+
+/* Klasa do ukrywania elementów */
+.hidden {
+  display: none !important;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.auth-mode-swtich-btn {
+  color: blue;
+  cursor: pointer;
+}
+
+.auth-mode-swtich-btn:hover {
+  text-decoration: underline;
+}
+
+.auth-mode-swtich-el {
+  margin-top: 60px;
+  text-align: right;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
