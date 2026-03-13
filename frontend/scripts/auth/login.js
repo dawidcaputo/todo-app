@@ -1,5 +1,5 @@
 import { AUTH_URL } from "./consts.js";
-import { setUser, user } from "./user.js";
+import { setUser } from "./user.js";
 import { closeModal, updateHeader } from "./ui.js";
 import { todoList } from "../todo/selectors.js";
 import { zainicjiujListe } from "../todo/todolist.js";

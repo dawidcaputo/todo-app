@@ -78,10 +78,9 @@ app.post("/auth/login", async (req, res) => {
         .json({ status: "user not found or wrong password" });
     }
 
-    const token = jwt.sign({ userId: user.id }, SECRET);
+    const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: "1d" });
     return res.json({ status: "ok", user, token });
   } catch (err) {
-    // ZMIANA: 12poprawne przypisanie statusu błędu
     return res.status(500).json({ status: "an error occured" });
   }
 });
@@ -103,6 +102,26 @@ const verifyToken = (req, res, next) => {
   }
 };
 // todos
+app.get("/users/me", verifyToken, async (req, res) => {
+  try {
+    const user = await db.get(
+      "SELECT id, name, email FROM users WHERE id = ?",
+      [req.userId]
+    );
+
+    if (!user) {
+      return res.status(401).json({ status: "user nie istnieje" });
+    }
+
+    return res.status(200).json({ user });
+  } catch (err) {
+    return res.status(500).json({ status: "an error occured" });
+  }
+});
+
+
+
+
 app.get("/todos", verifyToken, async (req, res) => {
   try {
     const sql = "SELECT * FROM todos WHERE userId = ?";
